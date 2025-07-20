@@ -1,0 +1,37 @@
+function doPost(e) {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Sheet1");
+  const params = JSON.parse(e.postData.contents);
+
+  const customerName = params.customerName || '';
+  const productCategory = params.productCategory || '';
+  const productName = params.productName || '';
+  const quantity = params.quantity || '';
+  const timestamp = new Date();
+  
+  const lastRow = sheet.getLastRow();
+  const orderId = lastRow + 1;
+
+  sheet.appendRow([
+    orderId,
+    customerName,
+    productCategory,
+    productName,
+    quantity,
+    "Confirmed",
+    timestamp
+  ]);
+
+  const response = {
+    "fulfillment_response": {
+      "messages": [{
+        "text": {
+          "text": [
+            "Your order has been logged successfully! 📦"
+          ]
+        }
+      }]
+    }
+  };
+
+  return ContentService.createTextOutput(JSON.stringify(response)).setMimeType(ContentService.MimeType.JSON);
+}

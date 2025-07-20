@@ -1,0 +1,28 @@
+function doGet(e) {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Sheet1");
+  const orderId = e.parameter.OrderID;
+
+  const data = sheet.getDataRange().getValues();
+  let result = "Order not found.";
+
+  for (let i = 1; i < data.length; i++) {
+    if (data[i][0] == orderId) {
+      result = `Order ${data[i][0]} for ${data[i][1]}: ${data[i][5]} (Product: ${data[i][3]}, Qty: ${data[i][4]})`;
+      break;
+    }
+  }
+
+  const response = {
+    "fulfillment_response": {
+      "messages": [{
+        "text": {
+          "text": [
+            result
+          ]
+        }
+      }]
+    }
+  };
+
+  return ContentService.createTextOutput(JSON.stringify(response)).setMimeType(ContentService.MimeType.JSON);
+}
